@@ -1,1073 +1,447 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparador de Nomes</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg: #050507;
-            --panel: #0c0c0e;
-            --border: #1f1f24;
-            --border-hover: #2e2e35;
-            --text: #f4f4f5;
-            --text-secondary: #a1a1aa;
-            --muted: #71717a;
-            
-            --red: #ef4444;
-            --red-soft: rgba(239, 68, 68, 0.12);
-            --red-border: rgba(239, 68, 68, 0.28);
-            
-            --green: #22c55e;
-            --green-soft: rgba(34, 197, 94, 0.11);
-            --green-border: rgba(34, 197, 94, 0.26);
-            
-            --input-bg: #09090b;
-            --radius: 14px;
-            --radius-sm: 9px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background:
-                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(255,255,255,0.04), transparent),
-                radial-gradient(ellipse 60% 40% at 90% 100%, rgba(255,255,255,0.025), transparent),
-                var(--bg);
-            color: var(--text);
-            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-            min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        header {
-            padding: 22px 40px;
-            border-bottom: 1px solid var(--border);
-            background: rgba(5, 5, 7, 0.82);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1480px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .brand-icon {
-            width: 46px;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #2a2a30;
-            border-radius: 12px;
-            font-size: 20px;
-            background: linear-gradient(145deg, #16161a, #0a0a0c);
-            box-shadow: 
-                inset 0 1px 0 rgba(255,255,255,0.04),
-                0 4px 12px rgba(0,0,0,0.3);
-            color: #d4d4d8;
-        }
-
-        .brand h1 {
-            font-size: 18px;
-            font-weight: 650;
-            letter-spacing: -0.4px;
-            color: #fafafa;
-        }
-
-        .brand p {
-            font-size: 12.5px;
-            color: var(--muted);
-            margin-top: 2px;
-            font-weight: 450;
-        }
-
-        main {
-            max-width: 1480px;
-            margin: 0 auto;
-            padding: 28px 40px 60px;
-        }
-
-        .actions {
-            margin-bottom: 28px;
-        }
-
-        .compare-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 14px;
-        }
-
-        .compare-btn {
-            background: #f4f4f5;
-            color: #09090b;
-            border: none;
-            padding: 14px 42px;
-            border-radius: 11px;
-            font-size: 15px;
-            font-weight: 650;
-            letter-spacing: -0.2px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.18s ease;
-            box-shadow: 0 4px 16px rgba(255,255,255,0.08);
-        }
-
-        .compare-btn:hover {
-            background: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(255,255,255,0.12);
-        }
-
-        .compare-btn:active {
-            transform: scale(0.98);
-        }
-
-        .clear-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .clear-actions button {
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--muted);
-            padding: 7px 13px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 500;
-            font-family: inherit;
-            transition: all 0.18s ease;
-        }
-
-        .clear-actions button:hover {
-            background: rgba(255,255,255,0.03);
-            border-color: var(--border-hover);
-            color: var(--text-secondary);
-        }
-
-        .clear-actions button:active {
-            transform: scale(0.97);
-        }
-
-        .green-btn {
-            border-color: rgba(34, 197, 94, 0.35) !important;
-            color: #4ade80 !important;
-        }
-
-        .green-btn:hover {
-            background: rgba(34, 197, 94, 0.08) !important;
-            border-color: rgba(34, 197, 94, 0.5) !important;
-            color: #86efac !important;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .column {
-            background: rgba(12, 12, 14, 0.9);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow:
-                0 0 0 1px rgba(255,255,255,0.015),
-                0 24px 48px -12px rgba(0,0,0,0.45);
-        }
-
-        .column-header {
-            padding: 18px 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
-        }
-
-        .column-title {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-        }
-
-        .column-number {
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 9px;
-            background: #16161a;
-            border: 1px solid #2a2a30;
-            font-size: 12px;
-            font-weight: 650;
-            color: #d4d4d8;
-            letter-spacing: 0.3px;
-        }
-
-        .column-title strong {
-            font-size: 14.5px;
-            font-weight: 600;
-            letter-spacing: -0.2px;
-            color: #f4f4f5;
-        }
-
-        .column-title span {
-            display: block;
-            color: var(--muted);
-            font-size: 12px;
-            margin-top: 1px;
-            font-weight: 450;
-        }
-
-        .counter {
-            color: var(--muted);
-            font-size: 12px;
-            font-weight: 500;
-            font-variant-numeric: tabular-nums;
-            background: rgba(255,255,255,0.03);
-            padding: 5px 10px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.04);
-        }
-
-        .table-header {
-            display: grid;
-            grid-template-columns: 48px 1fr 52px;
-            padding: 11px 16px;
-            color: #52525b;
-            font-size: 10.5px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            border-bottom: 1px solid var(--border);
-            background: rgba(0,0,0,0.15);
-            align-items: center;
-        }
-
-        .sort-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            user-select: none;
-            transition: color 0.15s;
-        }
-
-        .sort-header:hover {
-            color: #a1a1aa;
-        }
-
-        .sort-arrow {
-            font-size: 11px;
-            opacity: 0.5;
-            transition: opacity 0.15s;
-        }
-
-        .sort-header.active .sort-arrow {
-            opacity: 1;
-            color: #e4e4e7;
-        }
-
-        .rows {
-            padding: 6px 0 10px;
-            max-height: 620px;
-            overflow-y: auto;
-        }
-
-        .rows::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .rows::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .rows::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 10px;
-        }
-
-        .rows::-webkit-scrollbar-thumb:hover {
-            background: #3f3f46;
-        }
-
-        .row {
-            display: grid;
-            grid-template-columns: 48px 1fr 52px;
-            align-items: center;
-            min-height: 50px;
-            margin: 2px 10px;
-            border: 1px solid transparent;
-            border-radius: var(--radius-sm);
-            transition: background 0.18s ease, border-color 0.18s ease;
-        }
-
-        .row:hover {
-            background: rgba(255,255,255,0.025);
-        }
-
-        .row-number {
-            text-align: center;
-            color: #3f3f46;
-            font-size: 11px;
-            font-weight: 500;
-            font-variant-numeric: tabular-nums;
-            transition: color 0.18s ease;
-        }
-
-        .input-wrapper {
-            padding: 0 6px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            height: 34px;
-            border: 1px solid #1f1f24;
-            border-radius: 8px;
-            background: var(--input-bg);
-            color: var(--text);
-            padding: 0 12px;
-            outline: none;
-            font-size: 13px;
-            font-weight: 450;
-            font-family: inherit;
-            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-        }
-
-        input[type="text"]:hover {
-            border-color: #2a2a30;
-        }
-
-        input[type="text"]:focus {
-            border-color: #52525b;
-            background: #0c0c0e;
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
-        }
-
-        input[type="text"]::placeholder {
-            color: #3f3f46;
-            font-weight: 400;
-        }
-
-        .clear-cell {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .clear-check {
-            appearance: none;
-            width: 17px;
-            height: 17px;
-            border: 1.5px solid #3f3f46;
-            border-radius: 5px;
-            background: #0c0c0e;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.15s ease;
-        }
-
-        .clear-check:hover {
-            border-color: #71717a;
-            background: #16161a;
-        }
-
-        .clear-check:checked {
-            background: #f4f4f5;
-            border-color: #f4f4f5;
-        }
-
-        .clear-check:checked::after {
-            content: "✓";
-            position: absolute;
-            color: #09090b;
-            font-size: 11px;
-            font-weight: 800;
-            left: 2.5px;
-            top: -1px;
-        }
-
-        .row.match {
-            background: var(--red-soft);
-            border-color: var(--red-border);
-        }
-
-        .row.match input {
-            border-color: rgba(239, 68, 68, 0.22);
-            background: rgba(239, 68, 68, 0.04);
-        }
-
-        .row.match .row-number {
-            color: var(--red);
-        }
-
-        .row.unique {
-            background: var(--green-soft);
-            border-color: var(--green-border);
-        }
-
-        .row.unique input {
-            border-color: rgba(34, 197, 94, 0.2);
-            background: rgba(34, 197, 94, 0.035);
-        }
-
-        .row.unique .row-number {
-            color: var(--green);
-        }
-
-        .legend {
-            margin-top: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 20px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: rgba(255,255,255,0.015);
-            gap: 16px;
-        }
-
-        .legend-items {
-            display: flex;
-            gap: 28px;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            color: var(--text-secondary);
-            font-size: 12.5px;
-            font-weight: 450;
-        }
-
-        .legend-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .red-dot {
-            background: var(--red);
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
-        }
-
-        .green-dot {
-            background: var(--green);
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
-        }
-
-        .empty-dot {
-            background: #3f3f46;
-        }
-
-        .status {
-            font-size: 12.5px;
-            color: var(--muted);
-            font-weight: 500;
-            font-variant-numeric: tabular-nums;
-            white-space: nowrap;
-        }
-
-        @media (max-width: 1100px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 720px) {
-            header {
-                padding: 16px 18px;
-            }
-
-            main {
-                padding: 20px 16px 40px;
-            }
-
-            .compare-btn {
-                width: 100%;
-                padding: 14px 20px;
-            }
-
-            .clear-actions {
-                justify-content: center;
-            }
-
-            .table-header,
-            .row {
-                grid-template-columns: 36px 1fr 44px;
-            }
-
-            .column-header {
-                padding: 15px 16px;
-            }
-
-            .counter {
-                display: none;
-            }
-
-            input[type="text"] {
-                font-size: 12.5px;
-                height: 32px;
-            }
-
-            .legend {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 14px;
-                padding: 14px 16px;
-            }
-
-            .legend-items {
-                gap: 16px;
-            }
-
-            .status {
-                white-space: normal;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparador de Nomes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+  :root{
+    --bg: #14171c;
+    --panel: #1b1f27;
+    --panel-border: #2a2f3a;
+    --text: #e7e9ee;
+    --muted: #8b93a3;
+    --accent: #5ec8d8;
+    --accent-dim: #3a7f8c;
+    --green: #3ecf8e;
+    --green-bg: rgba(62,207,142,0.12);
+    --red: #ef6a6a;
+    --red-bg: rgba(239,106,106,0.10);
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #1d2733 0%, var(--bg) 45%);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 32px 20px 60px;
+    min-height:100vh;
+  }
+
+  .wrap{ max-width: 1080px; margin: 0 auto; }
+
+  header{ margin-bottom: 28px; }
+  .eyebrow{
+    font-family:'Space Grotesk',sans-serif;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--accent);
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size: 26px;
+    margin: 0 0 6px;
+    font-weight:700;
+  }
+  header p{
+    color: var(--muted);
+    font-size: 13px;
+    margin:0;
+    max-width:640px;
+  }
+
+  .columns{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+    margin: 24px 0 18px;
+  }
+  @media (max-width: 720px){ .columns{ grid-template-columns: 1fr; } }
+
+  .col-label{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text);
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .col-label span.tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--accent);
+    border:1px solid var(--accent-dim);
+    padding:2px 6px;
+    border-radius:4px;
+    letter-spacing:0.04em;
+  }
+  .col-hint{
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:8px;
+    line-height:1.5;
+  }
+
+  textarea{
+    width:100%;
+    min-height:220px;
+    background: var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    color:var(--text);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    line-height:1.6;
+    padding:12px 14px;
+    resize:vertical;
+    outline:none;
+    transition: border-color .15s ease;
+  }
+  textarea:focus{ border-color: var(--accent-dim); }
+  textarea::placeholder{ color:#4d5567; }
+
+  .actions{
+    display:flex;
+    gap:12px;
+    margin: 4px 0 30px;
+    flex-wrap:wrap;
+  }
+
+  button{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    border-radius:8px;
+    padding:11px 20px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition: transform .08s ease, filter .15s ease;
+  }
+  button:active{ transform: scale(0.97); }
+
+  #compareBtn{
+    background: var(--accent);
+    color:#0d1418;
+  }
+  #compareBtn:hover{ filter:brightness(1.08); }
+
+  #clearBtn{
+    background: transparent;
+    color: var(--muted);
+    border:1px solid var(--panel-border);
+  }
+  #clearBtn:hover{ color:var(--text); border-color:#454c5c; }
+
+  .summary{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-bottom:14px;
+    font-size:12px;
+    color:var(--muted);
+    flex-wrap:wrap;
+  }
+  .summary b{ color:var(--text); }
+  .dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; position:relative; top:-1px; }
+  .dot.g{ background:var(--green); }
+  .dot.r{ background:var(--red); }
+
+  .sort-toggle{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:8px;
+    padding:5px 6px;
+  }
+  .sort-toggle span.sort-label{
+    font-size:11px;
+    color:var(--muted);
+    padding-left:4px;
+  }
+  .sort-btn{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    background: transparent;
+    border:1px solid transparent;
+    color: var(--muted);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11px;
+    font-weight:600;
+    padding:5px 9px;
+    border-radius:6px;
+    cursor:pointer;
+    transition: all .12s ease;
+  }
+  .sort-btn svg{ width:11px; height:11px; transition: transform .15s ease; }
+  .sort-btn:hover{ color: var(--text); }
+  .sort-btn.active.g{ background: var(--green-bg); color: var(--green); border-color: rgba(62,207,142,0.35); }
+  .sort-btn.active.r{ background: var(--red-bg); color: var(--red); border-color: rgba(239,106,106,0.35); }
+
+  table{
+    width:100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    overflow:hidden;
+    font-size:13px;
+  }
+  thead th{
+    text-align:left;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+    padding:10px 14px;
+    border-bottom:1px solid var(--panel-border);
+  }
+  tbody td{
+    padding:9px 14px;
+    border-bottom:1px solid var(--panel-border);
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+
+  .cell-name{ font-weight:600; }
+  .cell-date{ color:var(--muted); font-size:11px; margin-left:8px; }
+  .empty-cell{ color:#454c5c; }
+
+  tr.match td:first-child{ background: var(--green-bg); border-left:3px solid var(--green); }
+  tr.match td:nth-child(2){ background: var(--green-bg); }
+  tr.mismatch td:first-child{ background: var(--red-bg); border-left:3px solid var(--red); }
+  tr.mismatch td:nth-child(2){ background: var(--red-bg); }
+
+  .status-pill{
+    display:inline-block;
+    font-size:10px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:20px;
+    letter-spacing:0.03em;
+  }
+  .status-pill.g{ background: rgba(62,207,142,0.18); color: var(--green); }
+  .status-pill.r{ background: rgba(239,106,106,0.16); color: var(--red); }
+
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color: var(--muted);
+    font-size:13px;
+    border:1px dashed var(--panel-border);
+    border-radius:10px;
+  }
+</style>
 </head>
-
 <body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">// diff de listas</p>
+    <h1>Comparador de Nomes</h1>
+    <p>Cole a lista com nome + data na Coluna 1 e a lista de nomes (com <code>--</code>) na Coluna 2. O comparador casa os nomes automaticamente, ignorando maiúsculas/minúsculas, espaços e o prefixo <code>--</code>.</p>
+  </header>
 
-<header>
-    <div class="header-content">
-        <div class="brand">
-            <div class="brand-icon">⇄</div>
-            <div>
-                <h1>Comparador de Nomes</h1>
-                <p>Compare duas listas de forma rápida e visual</p>
-            </div>
-        </div>
+  <div class="columns">
+    <div>
+      <div class="col-label">Coluna 1 <span class="tag">nome + data</span></div>
+      <div class="col-hint">Cole no formato: nome em uma linha, data/hora na linha seguinte (ex: 12-09-2026 00h37).</div>
+      <textarea id="col1" placeholder="moudtv
+12-09-2026 00h37
+riodtv
+10-09-2026 18h49
+..."></textarea>
     </div>
-</header>
-
-<main>
-
-    <div class="actions">
-        <div class="compare-wrapper">
-            <button class="compare-btn" onclick="compareLists()">
-                Comparar Nomes
-            </button>
-        </div>
-
-        <div class="clear-actions">
-            <button class="green-btn" onclick="moveGreensToTop()">Verdes no topo</button>
-            <button onclick="clearColumn(1)">Limpar Coluna 1</button>
-            <button onclick="clearColumn(2)">Limpar Coluna 2</button>
-            <button onclick="clearAll()">Limpar Tudo</button>
-        </div>
+    <div>
+      <div class="col-label">Coluna 2 <span class="tag">apenas nomes</span></div>
+      <div class="col-hint">Cole um nome por linha, com ou sem o prefixo -- (ex: --jvdtvv).</div>
+      <textarea id="col2" placeholder="--jvdtvv
+--riodtv
+--dpaula2
+..."></textarea>
     </div>
+  </div>
 
-    <section class="dashboard">
+  <div class="actions">
+    <button id="compareBtn">Comparar nomes</button>
+    <button id="clearBtn">Limpar colunas</button>
+  </div>
 
-        <div class="column">
-            <div class="column-header">
-                <div class="column-title">
-                    <div class="column-number">01</div>
-                    <div>
-                        <strong>Lista 01</strong>
-                        <span>Primeira relação de nomes</span>
-                    </div>
-                </div>
-                <div class="column-tools">
-                    <span class="counter" id="counter1">0 / 50 preenchidos</span>
-                </div>
-            </div>
-
-            <div class="table-header">
-                <div>#</div>
-                <div class="sort-header" onclick="sortColumn(1)" id="sortHeader1">
-                    Nome
-                    <span class="sort-arrow" id="sortArrow1">↓</span>
-                </div>
-                <div>Limpar</div>
-            </div>
-
-            <div class="rows" id="rows1"></div>
-        </div>
-
-        <div class="column">
-            <div class="column-header">
-                <div class="column-title">
-                    <div class="column-number">02</div>
-                    <div>
-                        <strong>Lista 02</strong>
-                        <span>Segunda relação de nomes</span>
-                    </div>
-                </div>
-                <div class="column-tools">
-                    <span class="counter" id="counter2">0 / 50 preenchidos</span>
-                </div>
-            </div>
-
-            <div class="table-header">
-                <div>#</div>
-                <div class="sort-header" onclick="sortColumn(2)" id="sortHeader2">
-                    Nome
-                    <span class="sort-arrow" id="sortArrow2">↓</span>
-                </div>
-                <div>Limpar</div>
-            </div>
-
-            <div class="rows" id="rows2"></div>
-        </div>
-
-    </section>
-
-    <div class="legend">
-        <div class="legend-items">
-            <div class="legend-item">
-                <div class="legend-dot red-dot"></div>
-                Nome encontrado nas duas listas
-            </div>
-            <div class="legend-item">
-                <div class="legend-dot green-dot"></div>
-                Nome não encontrado na outra lista
-            </div>
-            <div class="legend-item">
-                <div class="legend-dot empty-dot"></div>
-                Linha vazia
-            </div>
-        </div>
-        <div class="status" id="globalStatus">Aguardando dados...</div>
-    </div>
-</main>
+  <div id="results"></div>
+</div>
 
 <script>
-    const TOTAL_ROWS = 50;
-    const STORAGE_KEY_1 = "comparador_lista_1";
-    const STORAGE_KEY_2 = "comparador_lista_2";
+const col1 = document.getElementById('col1');
+const col2 = document.getElementById('col2');
+const resultsEl = document.getElementById('results');
+const compareBtn = document.getElementById('compareBtn');
+const clearBtn = document.getElementById('clearBtn');
 
-    const sortState = {
-        1: { direction: null },
-        2: { direction: null }
-    };
+const DATE_RE = /^\d{2}-\d{2}-\d{4}\s+\d{2}h\d{2}$/;
 
-    function createRows() {
-        const container1 = document.getElementById("rows1");
-        const container2 = document.getElementById("rows2");
-        container1.innerHTML = "";
-        container2.innerHTML = "";
+function normalize(name){
+  return name.trim().replace(/^-+/, '').toLowerCase();
+}
 
-        for (let i = 0; i < TOTAL_ROWS; i++) {
-            container1.appendChild(createRow(1, i));
-            container2.appendChild(createRow(2, i));
-        }
+function parseCol1(raw){
+  const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const entries = [];
+  let pendingName = null;
+  for(const line of lines){
+    if(DATE_RE.test(line)){
+      if(pendingName){
+        entries.push({ name: pendingName, date: line });
+        pendingName = null;
+      }
+      // date with no preceding name is ignored
+    } else {
+      if(pendingName){
+        // two names in a row (no date) — push previous without date
+        entries.push({ name: pendingName, date: null });
+      }
+      pendingName = line;
     }
+  }
+  if(pendingName){
+    entries.push({ name: pendingName, date: null });
+  }
+  return entries;
+}
 
-    function createRow(column, index) {
-        const row = document.createElement("div");
-        row.className = "row";
-        row.dataset.column = column;
-        row.dataset.index = index;
+function parseCol2(raw){
+  return raw.split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0)
+    .map(l => ({ raw: l, name: l.replace(/^-+/, '') }));
+}
 
-        row.innerHTML = `
-            <div class="row-number">${String(index + 1).padStart(2, "0")}</div>
-            <div class="input-wrapper">
-                <input type="text" class="name-input" placeholder="Nome" autocomplete="off"
-                    data-column="${column}" data-index="${index}">
-            </div>
-            <div class="clear-cell">
-                <input type="checkbox" class="clear-check" title="Limpar esta linha"
-                    data-column="${column}" data-index="${index}">
-            </div>
-        `;
-        return row;
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+let lastRows = null;
+let sortMode = 'none'; // 'none' | 'match-first' | 'mismatch-first'
+
+function buildRows(){
+  const entries1 = parseCol1(col1.value);
+  const entries2 = parseCol2(col2.value);
+
+  const map2 = new Map();
+  entries2.forEach(e => map2.set(normalize(e.name), e));
+  const used2 = new Set();
+
+  const rows = [];
+
+  entries1.forEach(e1 => {
+    const key = normalize(e1.name);
+    const match = map2.get(key);
+    if(match){
+      used2.add(key);
+      rows.push({ type:'match', name1: e1.name, date1: e1.date, name2: match.name });
+    } else {
+      rows.push({ type:'mismatch', name1: e1.name, date1: e1.date, name2: null });
     }
+  });
 
-    function normalizeName(name) {
-        return name.trim().replace(/\s+/g, " ").toLowerCase();
+  entries2.forEach(e2 => {
+    const key = normalize(e2.name);
+    if(!used2.has(key)){
+      rows.push({ type:'mismatch', name1: null, date1: null, name2: e2.name });
     }
+  });
 
-    /* =====================================================
-       Função principal de alinhamento
-       greensFirst = true  → exclusivos (verdes) no topo
-       greensFirst = false → iguais no topo (padrão do Comparar)
-    ===================================================== */
-    function alignLists(greensFirst = false) {
-        const list1 = [];
-        const list2 = [];
+  return rows;
+}
 
-        document.querySelectorAll('#rows1 .name-input').forEach(input => {
-            const original = input.value.trim();
-            if (original) {
-                list1.push({
-                    original: original,
-                    norm: normalizeName(original)
-                });
-            }
-        });
+function sortedRows(rows){
+  if(sortMode === 'none') return rows;
+  const matches = rows.filter(r => r.type === 'match');
+  const mismatches = rows.filter(r => r.type !== 'match');
+  return sortMode === 'match-first' ? matches.concat(mismatches) : mismatches.concat(matches);
+}
 
-        document.querySelectorAll('#rows2 .name-input').forEach(input => {
-            const original = input.value.trim();
-            if (original) {
-                list2.push({
-                    original: original,
-                    norm: normalizeName(original)
-                });
-            }
-        });
+const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
 
-        const set1 = new Set(list1.map(i => i.norm));
-        const set2 = new Set(list2.map(i => i.norm));
+function render(){
+  if(!lastRows || lastRows.length === 0){
+    resultsEl.innerHTML = '<div class="empty-state">Cole os dados nas duas colunas e clique em "Comparar nomes".</div>';
+    return;
+  }
 
-        const matches = [];
-        const only1 = [];
-        const only2 = [];
-        const usedMatches = new Set();
+  const matchCount = lastRows.filter(r => r.type === 'match').length;
+  const mismatchCount = lastRows.length - matchCount;
+  const rows = sortedRows(lastRows);
 
-        list1.forEach(item => {
-            if (set2.has(item.norm) && !usedMatches.has(item.norm)) {
-                const matchIn2 = list2.find(i => i.norm === item.norm);
-                matches.push({
-                    left: item.original,
-                    right: matchIn2 ? matchIn2.original : item.original
-                });
-                usedMatches.add(item.norm);
-            } else if (!set2.has(item.norm)) {
-                only1.push(item.original);
-            }
-        });
+  let html = '';
+  html += '<div class="summary">';
+  html += '<span><span class="dot g"></span><b>' + matchCount + '</b> coincidência(s)</span>';
+  html += '<span><span class="dot r"></span><b>' + mismatchCount + '</b> sem correspondência</span>';
+  html += '<div class="sort-toggle">';
+  html += '<span class="sort-label">Ordenar:</span>';
+  html += '<button class="sort-btn g' + (sortMode === 'match-first' ? ' active' : '') + '" data-sort="match-first">' + arrowUp + ' verdes</button>';
+  html += '<button class="sort-btn r' + (sortMode === 'mismatch-first' ? ' active' : '') + '" data-sort="mismatch-first">' + arrowUp + ' vermelhos</button>';
+  html += '</div>';
+  html += '</div>';
 
-        list2.forEach(item => {
-            if (!set1.has(item.norm)) {
-                only2.push(item.original);
-            }
-        });
+  html += '<table><thead><tr><th>Coluna 1</th><th>Coluna 2</th><th>Status</th></tr></thead><tbody>';
 
-        const newLeft = [];
-        const newRight = [];
+  rows.forEach(r => {
+    const rowClass = r.type === 'match' ? 'match' : 'mismatch';
+    const cell1 = r.name1
+      ? '<span class="cell-name">' + escapeHtml(r.name1) + '</span>' + (r.date1 ? '<span class="cell-date">' + escapeHtml(r.date1) + '</span>' : '')
+      : '<span class="empty-cell">—</span>';
+    const cell2 = r.name2
+      ? '<span class="cell-name">' + escapeHtml(r.name2) + '</span>'
+      : '<span class="empty-cell">—</span>';
+    const pill = r.type === 'match'
+      ? '<span class="status-pill g">coincide</span>'
+      : '<span class="status-pill r">não coincide</span>';
 
-        if (greensFirst) {
-            // Verdes (exclusivos) primeiro
-            only1.forEach(name => {
-                newLeft.push(name);
-                newRight.push("");
-            });
-            only2.forEach(name => {
-                newLeft.push("");
-                newRight.push(name);
-            });
-            matches.forEach(m => {
-                newLeft.push(m.left);
-                newRight.push(m.right);
-            });
-        } else {
-            // Iguais primeiro (comportamento padrão do botão Comparar)
-            matches.forEach(m => {
-                newLeft.push(m.left);
-                newRight.push(m.right);
-            });
-            only1.forEach(name => {
-                newLeft.push(name);
-                newRight.push("");
-            });
-            only2.forEach(name => {
-                newLeft.push("");
-                newRight.push(name);
-            });
-        }
+    html += '<tr class="' + rowClass + '"><td>' + cell1 + '</td><td>' + cell2 + '</td><td>' + pill + '</td></tr>';
+  });
 
-        const rows1 = document.querySelectorAll('#rows1 .row');
-        const rows2 = document.querySelectorAll('#rows2 .row');
+  html += '</tbody></table>';
+  resultsEl.innerHTML = html;
 
-        for (let i = 0; i < TOTAL_ROWS; i++) {
-            rows1[i].querySelector(".name-input").value = newLeft[i] || "";
-            rows2[i].querySelector(".name-input").value = newRight[i] || "";
-            rows1[i].classList.remove("match", "unique");
-            rows2[i].classList.remove("match", "unique");
-        }
-
-        applyColors();
-        saveData();
-        updateCounters();
-        updateGlobalStatus();
-    }
-
-    function compareLists() {
-        alignLists(false); // iguais no topo
-    }
-
-    function moveGreensToTop() {
-        alignLists(true); // verdes no topo
-    }
-
-    function applyColors() {
-        document.querySelectorAll('#rows1 .row').forEach((row1, index) => {
-            const row2 = document.querySelector(`#rows2 .row[data-index="${index}"]`);
-            const name1 = normalizeName(row1.querySelector(".name-input").value);
-            const name2 = normalizeName(row2.querySelector(".name-input").value);
-
-            row1.classList.remove("match", "unique");
-            row2.classList.remove("match", "unique");
-
-            if (name1 && name2 && name1 === name2) {
-                row1.classList.add("match");
-                row2.classList.add("match");
-            } else if (name1 && !name2) {
-                row1.classList.add("unique");
-            } else if (name2 && !name1) {
-                row2.classList.add("unique");
-            }
-        });
-    }
-
-    function updateCounters() {
-        let filled1 = 0, filled2 = 0;
-
-        document.querySelectorAll('#rows1 .name-input').forEach(input => {
-            if (input.value.trim()) filled1++;
-        });
-        document.querySelectorAll('#rows2 .name-input').forEach(input => {
-            if (input.value.trim()) filled2++;
-        });
-
-        document.getElementById("counter1").textContent = `${filled1} / ${TOTAL_ROWS} preenchidos`;
-        document.getElementById("counter2").textContent = `${filled2} / ${TOTAL_ROWS} preenchidos`;
-    }
-
-    function updateGlobalStatus() {
-        const status = document.getElementById("globalStatus");
-        const matchRows = document.querySelectorAll(".row.match").length;
-        const matches = Math.round(matchRows / 2);
-        const unique = document.querySelectorAll(".row.unique").length;
-
-        let hasData = false;
-        document.querySelectorAll('.name-input').forEach(input => {
-            if (input.value.trim()) hasData = true;
-        });
-
-        if (!hasData) {
-            status.textContent = "Aguardando dados...";
-            return;
-        }
-
-        status.textContent = `${matches} coincidência(s) · ${unique} nome(s) exclusivo(s)`;
-    }
-
-    function clearRow(column, index) {
-        const row = document.querySelector(`.row[data-column="${column}"][data-index="${index}"]`);
-        if (!row) return;
-
-        row.querySelector(".name-input").value = "";
-        row.querySelector(".clear-check").checked = false;
-        row.classList.remove("match", "unique");
-
-        saveData();
-        updateCounters();
-        updateGlobalStatus();
-    }
-
-    function clearColumn(column) {
-        if (!confirm(`Deseja realmente limpar a Coluna ${column}?`)) return;
-
-        document.querySelectorAll(`#rows${column} .row`).forEach(row => {
-            row.querySelector(".name-input").value = "";
-            row.querySelector(".clear-check").checked = false;
-            row.classList.remove("match", "unique");
-        });
-
-        sortState[column].direction = null;
-        updateSortArrow(column);
-
-        saveData();
-        updateCounters();
-        updateGlobalStatus();
-    }
-
-    function clearAll() {
-        if (!confirm("Deseja realmente limpar TODAS as linhas das duas listas?")) return;
-
-        document.querySelectorAll(".name-input").forEach(input => input.value = "");
-        document.querySelectorAll(".clear-check").forEach(check => check.checked = false);
-        document.querySelectorAll(".row").forEach(row => row.classList.remove("match", "unique"));
-
-        sortState[1].direction = null;
-        sortState[2].direction = null;
-        updateSortArrow(1);
-        updateSortArrow(2);
-
-        saveData();
-        updateCounters();
-        updateGlobalStatus();
-    }
-
-    function sortColumn(column) {
-        const current = sortState[column].direction;
-        let next = (current === null || current === 'desc') ? 'asc' : 'desc';
-        sortState[column].direction = next;
-
-        const inputs = Array.from(document.querySelectorAll(`#rows${column} .name-input`));
-        const names = inputs
-            .map(input => input.value.trim())
-            .filter(name => name !== "");
-
-        names.sort((a, b) => {
-            const comparison = a.localeCompare(b, 'pt-BR', { sensitivity: 'base' });
-            return next === 'asc' ? comparison : -comparison;
-        });
-
-        inputs.forEach((input, i) => {
-            input.value = names[i] || "";
-            input.closest(".row").classList.remove("match", "unique");
-        });
-
-        updateSortArrow(column);
-        saveData();
-        updateCounters();
-        updateGlobalStatus();
-    }
-
-    function updateSortArrow(column) {
-        const arrow = document.getElementById(`sortArrow${column}`);
-        const header = document.getElementById(`sortHeader${column}`);
-        const direction = sortState[column].direction;
-
-        if (direction === 'asc') {
-            arrow.textContent = '↑';
-            header.classList.add('active');
-        } else if (direction === 'desc') {
-            arrow.textContent = '↓';
-            header.classList.add('active');
-        } else {
-            arrow.textContent = '↓';
-            header.classList.remove('active');
-        }
-    }
-
-    function saveData() {
-        const list1 = [], list2 = [];
-
-        document.querySelectorAll("#rows1 .row").forEach(row => {
-            list1.push({ name: row.querySelector(".name-input").value });
-        });
-
-        document.querySelectorAll("#rows2 .row").forEach(row => {
-            list2.push({ name: row.querySelector(".name-input").value });
-        });
-
-        localStorage.setItem(STORAGE_KEY_1, JSON.stringify(list1));
-        localStorage.setItem(STORAGE_KEY_2, JSON.stringify(list2));
-    }
-
-    function loadData() {
-        const list1 = JSON.parse(localStorage.getItem(STORAGE_KEY_1) || "[]");
-        const list2 = JSON.parse(localStorage.getItem(STORAGE_KEY_2) || "[]");
-
-        list1.forEach((item, index) => {
-            const row = document.querySelector(`#rows1 .row[data-index="${index}"]`);
-            if (!row) return;
-            row.querySelector(".name-input").value = item.name || "";
-        });
-
-        list2.forEach((item, index) => {
-            const row = document.querySelector(`#rows2 .row[data-index="${index}"]`);
-            if (!row) return;
-            row.querySelector(".name-input").value = item.name || "";
-        });
-    }
-
-    document.addEventListener("input", function(event) {
-        if (event.target.classList.contains("name-input")) {
-            saveData();
-            updateCounters();
-        }
+  resultsEl.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-sort');
+      sortMode = (sortMode === mode) ? 'none' : mode;
+      render();
     });
+  });
+}
 
-    document.addEventListener("change", function(event) {
-        if (event.target.classList.contains("clear-check")) {
-            const column = event.target.dataset.column;
-            const index = event.target.dataset.index;
-            if (event.target.checked) clearRow(column, index);
-        }
-    });
+function compare(){
+  lastRows = buildRows();
+  sortMode = 'none';
+  render();
+}
 
-    document.addEventListener("paste", function(event) {
-        const target = event.target;
-        if (!target.classList.contains("name-input")) return;
+function clearAll(){
+  col1.value = '';
+  col2.value = '';
+  lastRows = null;
+  sortMode = 'none';
+  resultsEl.innerHTML = '';
+}
 
-        const text = event.clipboardData.getData("text");
-        if (!text) return;
-
-        event.preventDefault();
-
-        const column = target.dataset.column;
-        const startIndex = Number(target.dataset.index);
-
-        let normalized = text
-            .replace(/\r\n/g, "\n")
-            .replace(/--+/g, "\n")
-            .replace(/\s*-\s*/g, "\n")
-            .replace(/\n+/g, "\n");
-
-        let parts = normalized
-            .split("\n")
-            .map(p => p.trim())
-            .filter(Boolean);
-
-        const names = parts.filter(line => {
-            line = line.replace(/^-+|-+$/g, "").trim();
-            if (!line) return false;
-            if (/^teste/i.test(line)) return false;
-            if (/^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/.test(line)) return false;
-            if (/\d{1,2}h\d{2}/i.test(line)) return false;
-            if (/^\d+$/.test(line)) return false;
-            if (!/[a-zA-Z]/.test(line)) return false;
-            return /^[a-zA-Z0-9_\.]+$/.test(line) && line.length >= 2;
-        }).map(line => line.replace(/^-+|-+$/g, "").trim());
-
-        names.forEach((name, offset) => {
-            const index = startIndex + offset;
-            if (index >= TOTAL_ROWS) return;
-
-            const row = document.querySelector(`#rows${column} .row[data-index="${index}"]`);
-            if (!row) return;
-
-            row.querySelector(".name-input").value = name;
-            row.classList.remove("match", "unique");
-        });
-
-        saveData();
-        updateCounters();
-    });
-
-    createRows();
-    loadData();
-    updateCounters();
+compareBtn.addEventListener('click', compare);
+clearBtn.addEventListener('click', clearAll);
 </script>
-
 </body>
 </html>
